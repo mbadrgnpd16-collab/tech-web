@@ -215,10 +215,25 @@
       </div>
     </div>
 
-    <!-- Official Shopify App Compatibility Anchor -->
+    <!-- Official Shopify App Compatibility Anchors (Judge.me, Loox, Spr) -->
     <div id="shopify-product-reviews" data-id="{{ product.id }}" style="margin-top: 1.5rem;">
       {{ product.metafields.spr.reviews }}
     </div>
+
+    {%- if product.metafields.judgeme.widget != blank -%}
+      <div class="jdgm-widget jdgm-review-widget" data-id="{{ product.id }}" style="margin-top: 1.5rem;">
+        {{ product.metafields.judgeme.widget }}
+      </div>
+    {%- endif -%}
+
+    {% for block in section.blocks %}
+      {% case block.type %}
+        {% when '@app' %}
+          <div class="reviews-app-block" style="margin-top: 1.5rem;" {{ block.shopify_attributes }}>
+            {% render block %}
+          </div>
+      {% endcase %}
+    {% endfor %}
 
     <!-- Reviews Display Section -->
     <div class="reviews-feed-wrapper" style="margin-top: 2rem;">
@@ -467,6 +482,11 @@
 {% schema %}
 {
   "name": "Product Reviews",
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ],
   "settings": []
 }
 {% endschema %}

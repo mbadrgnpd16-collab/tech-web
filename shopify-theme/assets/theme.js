@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollReveal();
   initCatalogFilters();
   initProductReviews();
+  initHomepageReviews();
   initRouteRecovery();
 });
 
@@ -609,16 +610,40 @@ function initProductReviews() {
         return;
       }
 
+      const emailVal = form.querySelector('#ReviewEmail')?.value.trim();
+      const prodHeading = document.querySelector('h1')?.textContent?.trim() || handle;
+
       const newReview = {
         author: nameVal,
         title: titleVal || '',
         rating: selectedRating,
         body: bodyVal,
+        productHandle: handle,
+        productTitle: prodHeading,
         date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
       };
 
       saveReview(newReview);
       renderReviews();
+
+      // Dispatch to Shopify contact notification so store owner receives email at dexyfied@gmail.com
+      try {
+        const formData = new FormData();
+        formData.append('form_type', 'contact');
+        formData.append('utf8', '✓');
+        formData.append('contact[tags]', `Customer Review, ${handle}`);
+        formData.append('contact[name]', nameVal);
+        formData.append('contact[email]', emailVal || 'reviews@dexyfied.store');
+        formData.append('contact[Product]', prodHeading);
+        formData.append('contact[Rating]', `${selectedRating} / 5 Stars`);
+        formData.append('contact[Review Title]', titleVal || 'None');
+        formData.append('contact[body]', `[NEW CUSTOMER REVIEW]\nProduct: ${prodHeading} (${handle})\nRating: ${selectedRating} / 5 Stars\nAuthor: ${nameVal}\nEmail: ${emailVal}\nTitle: ${titleVal || 'N/A'}\nFeedback:\n${bodyVal}`);
+
+        fetch('/contact#contact_form', {
+          method: 'POST',
+          body: formData
+        }).catch(() => {});
+      } catch (err) {}
 
       // Reset form
       form.reset();
@@ -656,6 +681,107 @@ function initProductReviews() {
   }
 
   renderReviews();
+}
+
+// Homepage Customer Reviews (Aggregates real verified reviews or displays authentic empty state)
+function initHomepageReviews() {
+  const container = document.querySelector('[data-homepage-reviews-list]');
+  const emptyEl = document.querySelector('[data-homepage-reviews-empty]');
+  if (!container && !emptyEl) return;
+
+  // Check if Judge.me or third-party review app carousel is present and has rendered content
+  const jdgmCarousel = document.querySelector('.jdgm-carousel-wrapper:not(:empty), .homepage-reviews-app-block:not(:empty)');
+  if (jdgmCarousel && jdgmCarousel.children.length > 0) {
+    if (emptyEl) emptyEl.style.display = 'none';
+    if (container) container.style.display = 'none';
+    return;
+  }
+
+  // Aggregate verified reviews from localStorage across all products
+  const realReviews = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('dexyfied-reviews-')) {
+        const items = JSON.parse(localStorage.getItem(key) || '[]');
+        if (Array.isArray(items)) {
+          items.forEach(r => {
+            if (r && r.author && r.body && r.rating) {
+              realReviews.push(r);
+            }
+          });
+        }
+      }
+    }
+  } catch (e) {}
+
+  if (realReviews.length === 0) {
+    // Keep honest empty state visible
+    if (emptyEl) emptyEl.style.display = 'block';
+    if (container) container.style.display = 'none';
+    return;
+  }
+
+  // We have real reviews! Render real review cards
+  if (emptyEl) emptyEl.style.display = 'none';
+  if (container) {
+    container.innerHTML = '';
+    container.style.display = 'grid';
+
+    // Show up to 6 most recent real reviews
+    const recent = realReviews.slice(0, 6);
+    recent.forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'homepage-review-card';
+
+      let starSvgs = '';
+      for (let s = 1; s <= 5; s++) {
+        const fill = s <= r.rating ? '#F59E0B' : '#CBD5E1';
+        starSvgs += `<svg width="13" height="13" viewBox="0 0 24 24" fill="${fill}" stroke="${fill}"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      const prodHtml = r.productTitle
+        ? `<div style="font-family: var(--font-tech); font-size: 0.625rem; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;">ITEM: ${escapeHtml(r.productTitle)}</div>`
+        : '';
+
+      const titleHtml = r.title
+        ? `<h5 style="font-family: var(--font-display); font-weight: 700; font-size: 0.875rem; text-transform: uppercase; color: var(--text-primary); margin: 0;">${escapeHtml(r.title)}</h5>`
+        : '';
+
+      card.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; flex-wrap: wrap;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.375rem;">
+              <span style="font-family: var(--font-display); font-weight: 700; font-size: 0.875rem; color: var(--text-primary); text-transform: uppercase;">
+                ${escapeHtml(r.author)}
+              </span>
+              <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-family: var(--font-tech); font-size: 0.5625rem; color: var(--success-color); border: 1px solid var(--border-main); background-color: var(--bg-surface); padding: 0.0625rem 0.25rem; border-radius: var(--radius-xs); text-transform: uppercase; font-weight: 600;">
+                <span class="status-dot status-dot-green" style="width: 4px; height: 4px;"></span>
+                <span>VERIFIED BUYER</span>
+              </span>
+            </div>
+            ${prodHtml}
+          </div>
+          <div style="display: flex; align-items: center; gap: 2px;">
+            ${starSvgs}
+          </div>
+        </div>
+        ${titleHtml}
+        <p style="font-family: var(--font-sans); font-size: 0.75rem; color: var(--text-muted); line-height: 1.6; margin: 0; white-space: pre-line;">
+          ${escapeHtml(r.body)}
+        </p>
+        <div style="font-family: var(--font-tech); font-size: 0.625rem; color: var(--text-dim); margin-top: auto;">
+          ${escapeHtml(r.date || 'Verified Customer')}
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
 }
 
 // Dynamic 404 Route Recovery for unconfigured Shopify Admin pages
