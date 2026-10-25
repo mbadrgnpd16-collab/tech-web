@@ -129,7 +129,7 @@
     </div>
 
     <!-- Pricing & Action -->
-    <div style="margin-top: 0.75rem; padding-top: 0.5rem; border-top: 1px solid var(--border-main); display: flex; align-items: center; justify-content: space-between; gap: 0.375rem;">
+    <div style="margin-top: 0.75rem; padding-top: 0.5rem; border-top: 1px solid var(--border-main); display: flex; align-items: center; justify-content: space-between; gap: 0.375rem; flex-wrap: wrap;" class="product-card-footer">
       <div style="display: flex; flex-direction: column; min-width: 0;">
         {% if product.compare_at_price > product.price %}
           <span style="font-family: var(--font-tech); font-size: 0.625rem; color: var(--text-dim); text-decoration: line-through; text-transform: uppercase; white-space: nowrap;">
@@ -187,6 +187,29 @@
   }
   .mobile-only-btn-text {
     display: inline;
+  }
+  .product-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  @media (max-width: 380px) {
+    .product-card-footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .product-card-footer > div:last-child {
+      width: 100%;
+    }
+    .product-card-btn {
+      width: 100%;
+      text-align: center;
+      justify-content: center;
+    }
   }
   @media (min-width: 640px) {
     .product-card-body {

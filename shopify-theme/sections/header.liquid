@@ -215,6 +215,12 @@
     color: var(--text-primary);
     white-space: nowrap;
   }
+  @media (max-width: 380px) {
+    .header-brand-name {
+      font-size: 0.9375rem;
+      letter-spacing: 0.08em;
+    }
+  }
   @media (min-width: 640px) {
     .header-brand-name {
       font-size: 1.25rem;
@@ -230,19 +236,26 @@
     margin-top: 2px;
     white-space: nowrap;
   }
-  @media (max-width: 374px) {
+  @media (max-width: 420px) {
     .header-brand-sub {
       display: none;
     }
   }
   .header-action-btn {
-    min-width: 40px;
-    min-height: 40px;
-    padding: 0.5rem;
+    min-width: 38px;
+    min-height: 38px;
+    padding: 0.4rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border-color: var(--border-main);
+  }
+  @media (max-width: 360px) {
+    .header-action-btn {
+      min-width: 34px;
+      min-height: 34px;
+      padding: 0.25rem;
+    }
   }
   .header-theme-toggle {
     min-width: 40px;

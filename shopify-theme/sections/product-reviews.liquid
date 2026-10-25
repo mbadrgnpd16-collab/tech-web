@@ -303,6 +303,21 @@
     gap: 1rem;
     flex-wrap: wrap;
   }
+  @media (max-width: 420px) {
+    .reviews-summary-actions {
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+    }
+    .reviews-stats-pill {
+      justify-content: center;
+      width: 100%;
+    }
+    .reviews-summary-actions [data-open-review-form] {
+      width: 100%;
+      justify-content: center;
+    }
+  }
   .reviews-stats-pill {
     display: flex;
     align-items: center;

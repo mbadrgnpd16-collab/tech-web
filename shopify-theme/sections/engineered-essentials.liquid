@@ -79,7 +79,7 @@
           >
         </div>
 
-        <div style="padding-top: 1rem; border-top: 1px solid var(--border-main); display: flex; align-items: center; justify-content: space-between;">
+        <div style="padding-top: 1rem; border-top: 1px solid var(--border-main); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
           <div>
             <div style="font-family: var(--font-tech); font-size: 0.75rem; color: var(--text-dim); text-decoration: line-through;">
               PKR 5,000
@@ -89,10 +89,11 @@
             </div>
           </div>
 
-          <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
             <a
               href="{% if p_airpods != blank %}{{ p_airpods.url }}{% else %}/products/touch-screen-airpods-case{% endif %}"
               class="btn-tech"
+              style="padding: 0.625rem 0.875rem;"
             >
               SPECS
             </a>
@@ -115,7 +116,7 @@
           style="border: 1px solid var(--border-main); background: var(--bg-surface); padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; border-radius: var(--radius-xs); box-shadow: var(--shadow-2xs); cursor: pointer;"
           onclick="window.location.href='{% if p_headphones != blank %}{{ p_headphones.url }}{% else %}/products/wireless-over-ear-stereo-headphones{% endif %}'"
         >
-          <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-main);">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-main); gap: 0.5rem;">
             <span style="font-family: var(--font-tech); font-size: 0.625rem; color: var(--text-dim); text-transform: uppercase; font-weight: 600;">
               REF DX-03
             </span>
@@ -129,14 +130,14 @@
           </div>
 
           <div>
-            <h4 style="font-family: var(--font-display); font-weight: 600; font-size: 0.9375rem; color: var(--text-primary); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            <h4 style="font-family: var(--font-display); font-weight: 600; font-size: 0.9375rem; color: var(--text-primary); margin: 0; line-height: 1.3;">
               {{ p_headphones.title | default: 'Wireless Over-Ear Stereo Headphones' }}
             </h4>
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; line-height: 1.4;">
               Full-size wireless stereo listening with cushioned enclosure.
             </p>
 
-            <div style="margin-top: 0.625rem; padding-top: 0.625rem; border-top: 1px solid var(--border-main); display: flex; align-items: baseline; justify-content: space-between;">
+            <div style="margin-top: 0.625rem; padding-top: 0.625rem; border-top: 1px solid var(--border-main); display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
               <div style="display: flex; align-items: baseline; gap: 0.5rem;">
                 <span style="font-family: var(--font-tech); font-size: 0.625rem; color: var(--text-dim); text-decoration: line-through;">PKR 5,000</span>
                 <span style="font-family: var(--font-display); font-weight: 700; font-size: 1rem; color: var(--text-primary);">PKR 3,500</span>
@@ -153,7 +154,7 @@
           style="border: 1px solid var(--border-main); background: var(--bg-surface); padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; border-radius: var(--radius-xs); box-shadow: var(--shadow-2xs); cursor: pointer;"
           onclick="window.location.href='{% if p_ring != blank %}{{ p_ring.url }}{% else %}/products/luminous-heartbeat-pattern-finger-ring{% endif %}'"
         >
-          <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-main);">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-main); gap: 0.5rem;">
             <span style="font-family: var(--font-tech); font-size: 0.625rem; color: var(--text-dim); text-transform: uppercase; font-weight: 600;">
               REF DX-04
             </span>
@@ -167,14 +168,14 @@
           </div>
 
           <div>
-            <h4 style="font-family: var(--font-display); font-weight: 600; font-size: 0.9375rem; color: var(--text-primary); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            <h4 style="font-family: var(--font-display); font-weight: 600; font-size: 0.9375rem; color: var(--text-primary); margin: 0; line-height: 1.3;">
               {{ p_ring.title | default: 'Luminous Heartbeat Pattern Finger Ring' }}
             </h4>
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; line-height: 1.4;">
               Durable band with integrated phosphorescent heartbeat motif.
             </p>
 
-            <div style="margin-top: 0.625rem; padding-top: 0.625rem; border-top: 1px solid var(--border-main); display: flex; align-items: baseline; justify-content: space-between;">
+            <div style="margin-top: 0.625rem; padding-top: 0.625rem; border-top: 1px solid var(--border-main); display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
               <div style="display: flex; align-items: baseline; gap: 0.5rem;">
                 <span style="font-family: var(--font-tech); font-size: 0.625rem; color: var(--text-dim); text-decoration: line-through;">PKR 1,800</span>
                 <span style="font-family: var(--font-display); font-weight: 700; font-size: 1rem; color: var(--text-primary);">PKR 550</span>
