@@ -18,6 +18,22 @@
   if p_handle contains 'contact' or p_title contains 'contact' or p_url contains 'contact' or template.suffix == 'contact'
     assign is_contact = true
   endif
+
+  assign is_policy = false
+  assign policy_kind = ''
+  if p_handle contains 'refund' or p_title contains 'refund' or p_url contains 'refund' or p_handle contains 'return' or p_title contains 'return' or p_url contains 'return'
+    assign is_policy = true
+    assign policy_kind = 'refund'
+  elsif p_handle contains 'shipping' or p_title contains 'shipping' or p_url contains 'shipping' or p_handle contains 'delivery'
+    assign is_policy = true
+    assign policy_kind = 'shipping'
+  elsif p_handle contains 'privacy' or p_title contains 'privacy' or p_url contains 'privacy'
+    assign is_policy = true
+    assign policy_kind = 'privacy'
+  elsif p_handle contains 'terms' or p_title contains 'terms' or p_url contains 'terms'
+    assign is_policy = true
+    assign policy_kind = 'terms'
+  endif
 -%}
 
 <div style="background-color: var(--bg-surface); padding-top: 2.5rem; padding-bottom: 6rem;">
@@ -25,6 +41,8 @@
     {% render 'about-block' %}
   {% elsif is_contact %}
     {% render 'contact-block' %}
+  {% elsif is_policy and page.content == blank %}
+    {% render 'policy-block', policy_type: policy_kind %}
   {% elsif page.content != blank %}
     <div class="dexy-container" style="max-width: 48rem;">
       <!-- Page Header -->
@@ -43,19 +61,7 @@
       </div>
     </div>
   {% else %}
-    <div class="dexy-container" style="max-width: 48rem;">
-      <div style="padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-main); margin-bottom: 2.5rem;">
-        <span style="font-family: var(--font-tech); font-size: 0.6875rem; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 0.25rem; font-weight: 700;">
-          DEXYFIED DOCUMENTATION // OFFICIAL
-        </span>
-        <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(1.625rem, 5vw, 2.25rem); text-transform: uppercase; color: var(--text-primary); margin: 0; line-height: 1.15;">
-          {{ page.title }}
-        </h1>
-      </div>
-      <div style="font-family: var(--font-tech); font-size: 0.8125rem; color: var(--text-muted); padding: 2rem 0;">
-        DEXYFIED STOREFRONT DOCUMENTATION // IN PROGRESS. PLEASE CHECK BACK SHORTLY.
-      </div>
-    </div>
+    {% render 'policy-block', policy_type: policy_kind %}
   {% endif %}
 </div>
 

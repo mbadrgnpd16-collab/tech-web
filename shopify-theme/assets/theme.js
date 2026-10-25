@@ -166,6 +166,21 @@ function initProductGallery() {
       }
       thumbnails.forEach(t => t.classList.remove('active'));
       thumb.classList.add('active');
+
+      // Sync matching variant finish button if thumbnail alt matches
+      if (alt) {
+        const altLower = alt.toLowerCase();
+        const variantBtns = document.querySelectorAll('.pdp-finish-btn, .pdp-variant-btn');
+        variantBtns.forEach(vb => {
+          const vTitle = (vb.getAttribute('data-variant-title') || '').toLowerCase();
+          const vImg = vb.getAttribute('data-variant-image') || '';
+          if ((vTitle && altLower.includes(vTitle)) || (vImg && src && (vImg === src || src.includes(vImg)))) {
+            if (typeof selectPdpVariant === 'function') {
+              selectPdpVariant(vb);
+            }
+          }
+        });
+      }
     });
   });
 }
@@ -646,21 +661,35 @@ function initProductReviews() {
 // Dynamic 404 Route Recovery for unconfigured Shopify Admin pages
 function initRouteRecovery() {
   const notFoundEl = document.querySelector('[data-404-default]');
-  const aboutFallback = document.querySelector('[data-404-about-fallback]');
-  const contactFallback = document.querySelector('[data-404-contact-fallback]');
   if (!notFoundEl) return;
 
+  const aboutFallback = document.querySelector('[data-404-about-fallback]');
+  const contactFallback = document.querySelector('[data-404-contact-fallback]');
+  const refundFallback = document.querySelector('[data-404-refund-fallback]');
+  const shippingFallback = document.querySelector('[data-404-shipping-fallback]');
+  const privacyFallback = document.querySelector('[data-404-privacy-fallback]');
+  const termsFallback = document.querySelector('[data-404-terms-fallback]');
+
   const path = (window.location.pathname || '').toLowerCase();
+  let targetFallback = null;
+
   if (path.includes('/pages/about') || path.includes('/about')) {
-    if (aboutFallback) {
-      notFoundEl.style.display = 'none';
-      aboutFallback.style.display = 'block';
-    }
+    targetFallback = aboutFallback;
   } else if (path.includes('/pages/contact') || path.includes('/contact')) {
-    if (contactFallback) {
-      notFoundEl.style.display = 'none';
-      contactFallback.style.display = 'block';
-    }
+    targetFallback = contactFallback;
+  } else if (path.includes('refund') || path.includes('return')) {
+    targetFallback = refundFallback;
+  } else if (path.includes('shipping') || path.includes('delivery')) {
+    targetFallback = shippingFallback;
+  } else if (path.includes('privacy')) {
+    targetFallback = privacyFallback;
+  } else if (path.includes('terms')) {
+    targetFallback = termsFallback;
+  }
+
+  if (targetFallback) {
+    notFoundEl.style.display = 'none';
+    targetFallback.style.display = 'block';
   }
 }
 

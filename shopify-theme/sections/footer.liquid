@@ -78,13 +78,19 @@
         <h4 style="font-family: var(--font-tech); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-primary); font-weight: 700; margin: 0;">
           POLICIES &amp; INFO
         </h4>
+        {%- liquid
+          assign refund_url = shop.refund_policy.url | default: '/pages/refund-policy'
+          assign shipping_url = shop.shipping_policy.url | default: '/pages/shipping-policy'
+          assign privacy_url = shop.privacy_policy.url | default: '/pages/privacy-policy'
+          assign terms_url = shop.terms_of_service.url | default: '/pages/terms'
+        -%}
         <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.75rem; color: var(--text-muted);">
           <li><a href="/pages/about" class="footer-nav-link">About DEXYFIED</a></li>
           <li><a href="/pages/contact" class="footer-nav-link">Contact Support Desk</a></li>
-          <li><a href="/pages/refund-policy" class="footer-nav-link">7-Day Refund Policy</a></li>
-          <li><a href="/pages/shipping-policy" class="footer-nav-link">Shipping Policy</a></li>
-          <li><a href="/pages/privacy-policy" class="footer-nav-link">Privacy Policy</a></li>
-          <li><a href="/pages/terms" class="footer-nav-link">Terms of Service</a></li>
+          <li><a href="{{ refund_url }}" class="footer-nav-link">7-Day Refund Policy</a></li>
+          <li><a href="{{ shipping_url }}" class="footer-nav-link">Shipping Policy</a></li>
+          <li><a href="{{ privacy_url }}" class="footer-nav-link">Privacy Policy</a></li>
+          <li><a href="{{ terms_url }}" class="footer-nav-link">Terms of Service</a></li>
         </ul>
       </div>
 

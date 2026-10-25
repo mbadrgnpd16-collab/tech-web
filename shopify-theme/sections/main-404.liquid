@@ -19,6 +19,26 @@
   if current_path contains 'contact' or canon_url contains 'contact'
     assign is_contact_route = true
   endif
+
+  assign is_refund_route = false
+  if current_path contains 'refund' or current_path contains 'return' or canon_url contains 'refund' or canon_url contains 'return'
+    assign is_refund_route = true
+  endif
+
+  assign is_shipping_route = false
+  if current_path contains 'shipping' or current_path contains 'delivery' or canon_url contains 'shipping' or canon_url contains 'delivery'
+    assign is_shipping_route = true
+  endif
+
+  assign is_privacy_route = false
+  if current_path contains 'privacy' or canon_url contains 'privacy'
+    assign is_privacy_route = true
+  endif
+
+  assign is_terms_route = false
+  if current_path contains 'terms' or canon_url contains 'terms'
+    assign is_terms_route = true
+  endif
 -%}
 
 {%- if is_about_route -%}
@@ -29,18 +49,38 @@
   <div style="background-color: var(--bg-surface); padding-top: 2.5rem; padding-bottom: 6rem;">
     {% render 'contact-block' %}
   </div>
+{%- elsif is_refund_route -%}
+  <div style="background-color: var(--bg-surface); padding-top: 2.5rem; padding-bottom: 6rem;">
+    {% render 'policy-block', policy_type: 'refund' %}
+  </div>
+{%- elsif is_shipping_route -%}
+  <div style="background-color: var(--bg-surface); padding-top: 2.5rem; padding-bottom: 6rem;">
+    {% render 'policy-block', policy_type: 'shipping' %}
+  </div>
+{%- elsif is_privacy_route -%}
+  <div style="background-color: var(--bg-surface); padding-top: 2.5rem; padding-bottom: 6rem;">
+    {% render 'policy-block', policy_type: 'privacy' %}
+  </div>
+{%- elsif is_terms_route -%}
+  <div style="background-color: var(--bg-surface); padding-top: 2.5rem; padding-bottom: 6rem;">
+    {% render 'policy-block', policy_type: 'terms' %}
+  </div>
 {%- else -%}
   <script>
     (function() {
       try {
         var p = (window.location.pathname || '').toLowerCase();
-        if (p.indexOf('about') !== -1) {
+        var target = null;
+        if (p.indexOf('about') !== -1) target = '[data-404-about-fallback]';
+        else if (p.indexOf('contact') !== -1) target = '[data-404-contact-fallback]';
+        else if (p.indexOf('refund') !== -1 || p.indexOf('return') !== -1) target = '[data-404-refund-fallback]';
+        else if (p.indexOf('shipping') !== -1 || p.indexOf('delivery') !== -1) target = '[data-404-shipping-fallback]';
+        else if (p.indexOf('privacy') !== -1) target = '[data-404-privacy-fallback]';
+        else if (p.indexOf('terms') !== -1) target = '[data-404-terms-fallback]';
+
+        if (target) {
           var st = document.createElement('style');
-          st.textContent = '[data-404-default]{display:none!important}[data-404-about-fallback]{display:block!important}';
-          document.head.appendChild(st);
-        } else if (p.indexOf('contact') !== -1) {
-          var st = document.createElement('style');
-          st.textContent = '[data-404-default]{display:none!important}[data-404-contact-fallback]{display:block!important}';
+          st.textContent = '[data-404-default]{display:none!important}' + target + '{display:block!important}';
           document.head.appendChild(st);
         }
       } catch(e) {}
@@ -53,6 +93,18 @@
   </div>
   <div data-404-contact-fallback style="display: none; background-color: var(--bg-surface); padding-top: 2.5rem; padding-bottom: 6rem;">
     {% render 'contact-block' %}
+  </div>
+  <div data-404-refund-fallback style="display: none; background-color: var(--bg-surface); padding-top: 2.5rem; padding-bottom: 6rem;">
+    {% render 'policy-block', policy_type: 'refund' %}
+  </div>
+  <div data-404-shipping-fallback style="display: none; background-color: var(--bg-surface); padding-top: 2.5rem; padding-bottom: 6rem;">
+    {% render 'policy-block', policy_type: 'shipping' %}
+  </div>
+  <div data-404-privacy-fallback style="display: none; background-color: var(--bg-surface); padding-top: 2.5rem; padding-bottom: 6rem;">
+    {% render 'policy-block', policy_type: 'privacy' %}
+  </div>
+  <div data-404-terms-fallback style="display: none; background-color: var(--bg-surface); padding-top: 2.5rem; padding-bottom: 6rem;">
+    {% render 'policy-block', policy_type: 'terms' %}
   </div>
 
   <div data-404-default style="background-color: var(--bg-surface); padding-top: 4rem; padding-bottom: 7rem;">

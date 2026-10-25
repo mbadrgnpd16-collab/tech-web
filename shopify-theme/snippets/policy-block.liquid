@@ -1,0 +1,329 @@
+{% comment %}
+  DEXYFIED Official Policy Documentation Block
+  Handles:
+  - Refund / Return Policy (7 calendar days)
+  - Shipping Policy (Flat PKR 150 nationwide & Cash on Delivery)
+  - Privacy Policy (Strict data confidentiality & secure checkout)
+  - Terms of Service (Commercial standards & hardware verification)
+{% endcomment %}
+
+{%- liquid
+  assign target_policy = policy_type | default: ''
+  if target_policy == ''
+    assign p_url = request.path | default: '' | downcase
+    assign c_url = canonical_url | default: '' | downcase
+    assign p_handle = page.handle | default: '' | downcase
+
+    if p_url contains 'refund' or p_url contains 'return' or c_url contains 'refund' or c_url contains 'return' or p_handle contains 'refund' or p_handle contains 'return'
+      assign target_policy = 'refund'
+    elsif p_url contains 'shipping' or c_url contains 'shipping' or p_handle contains 'shipping' or p_url contains 'delivery'
+      assign target_policy = 'shipping'
+    elsif p_url contains 'privacy' or c_url contains 'privacy' or p_handle contains 'privacy'
+      assign target_policy = 'privacy'
+    elsif p_url contains 'terms' or c_url contains 'terms' or p_handle contains 'terms'
+      assign target_policy = 'terms'
+    else
+      assign target_policy = 'refund'
+    endif
+  endif
+-%}
+
+<div class="dexy-container policy-container" style="max-width: 52rem;">
+  <!-- Policy Header Card -->
+  <div class="policy-hero-card">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
+      <div style="display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--font-tech); font-size: 0.6875rem; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">
+        <span class="status-dot status-dot-blue"></span>
+        <span>
+          {% case target_policy %}
+            {% when 'refund' %}
+              DEXYFIED DOCUMENTATION // 7-DAY RETURN POLICY
+            {% when 'shipping' %}
+              DEXYFIED DOCUMENTATION // SHIPPING & DELIVERY
+            {% when 'privacy' %}
+              DEXYFIED DOCUMENTATION // PRIVACY & DATA
+            {% when 'terms' %}
+              DEXYFIED DOCUMENTATION // COMMERCIAL TERMS
+          {% endcase %}
+        </span>
+      </div>
+      <span style="font-family: var(--font-tech); font-size: 0.6875rem; color: var(--text-dim); text-transform: uppercase;">
+        OFFICIAL // PAKISTAN
+      </span>
+    </div>
+
+    <h1 style="font-family: var(--font-display); font-weight: 700; font-size: clamp(1.75rem, 5vw, 2.5rem); text-transform: uppercase; color: var(--text-primary); margin: 0 0 0.75rem 0; line-height: 1.15;">
+      {% case target_policy %}
+        {% when 'refund' %}
+          7-Day Return &amp; Refund Policy
+        {% when 'shipping' %}
+          Nationwide Shipping Policy
+        {% when 'privacy' %}
+          Privacy &amp; Data Protection Policy
+        {% when 'terms' %}
+          Terms of Service &amp; Standards
+      {% endcase %}
+    </h1>
+
+    <p style="font-family: var(--font-sans); font-size: 0.9375rem; color: var(--text-muted); line-height: 1.6; margin: 0; max-width: 44rem;">
+      {% case target_policy %}
+        {% when 'refund' %}
+          Transparent return procedures and buyer protection for all DEXYFIED consumer hardware across Pakistan.
+        {% when 'shipping' %}
+          Clear timelines, flat PKR 150 nationwide delivery, and Cash on Delivery logistics across Pakistan.
+        {% when 'privacy' %}
+          How DEXYFIED handles, protects, and safeguards your customer details during order placement and fulfillment.
+        {% when 'terms' %}
+          Operating guidelines, warranty validation, and checkout standards governing DEXYFIED storefront purchases.
+      {% endcase %}
+    </p>
+
+    {% if page.content != blank %}
+      <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-main); font-family: var(--font-sans); font-size: 0.875rem; color: var(--text-muted); line-height: 1.7;" class="page-content">
+        {{ page.content }}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Detailed Policy Sections -->
+  <div class="policy-sections-grid" style="margin-top: 2rem;">
+    {% case target_policy %}
+      {% when 'refund' %}
+        <!-- Section 1 -->
+        <div class="policy-card">
+          <div class="policy-card-num">01 // RETURN WINDOW</div>
+          <h3 class="policy-card-title">7 Calendar Days Guarantee</h3>
+          <p class="policy-card-desc">
+            You may initiate a return within <strong>7 calendar days</strong> from the date of courier delivery. We provide prompt assistance for items that arrive defective, damaged in transit, or differing from verified specifications.
+          </p>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="policy-card">
+          <div class="policy-card-num">02 // ELIGIBILITY CRITERIA</div>
+          <h3 class="policy-card-title">Original Packaging &amp; Condition</h3>
+          <p class="policy-card-desc">
+            Returned hardware must be in original condition with all retail packaging, user manuals, accessories, cables, and protective films intact. Items showing physical misuse, liquid ingress, or tampering are not eligible for standard return.
+          </p>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="policy-card">
+          <div class="policy-card-num">03 // INITIATION PROCESS</div>
+          <h3 class="policy-card-title">Straightforward Return Procedure</h3>
+          <p class="policy-card-desc">
+            To start a return, email us at <a href="mailto:dexyfied@gmail.com" style="color: var(--accent-blue); text-decoration: underline;">dexyfied@gmail.com</a> or message our official WhatsApp desk with your Order ID and photo/video verification of the product.
+          </p>
+        </div>
+
+        <!-- Section 4 -->
+        <div class="policy-card">
+          <div class="policy-card-num">04 // DISBURSEMENT</div>
+          <h3 class="policy-card-title">Prompt Refund Processing</h3>
+          <p class="policy-card-desc">
+            Upon return inspection approval at our facility, refunds are issued within <strong>3–5 business days</strong> via your original payment channel, Meezan Bank transfer, JazzCash, or Easypaisa.
+          </p>
+        </div>
+
+      {% when 'shipping' %}
+        <!-- Shipping 1 -->
+        <div class="policy-card">
+          <div class="policy-card-num">01 // FLAT LOGISTICS RATE</div>
+          <h3 class="policy-card-title">Flat PKR 150 Nationwide</h3>
+          <p class="policy-card-desc">
+            All orders across Pakistan enjoy flat <strong>PKR 150 standard delivery</strong>, regardless of destination city, package size, or quantity ordered.
+          </p>
+        </div>
+
+        <!-- Shipping 2 -->
+        <div class="policy-card">
+          <div class="policy-card-num">02 // DELIVERY TIMELINES</div>
+          <h3 class="policy-card-title">2 to 4 Business Days</h3>
+          <p class="policy-card-desc">
+            Major cities (Karachi, Lahore, Islamabad, Rawalpindi, Faisalabad) typically arrive within <strong>2–4 business days</strong>. Regional centers and peripheral towns are delivered within <strong>3–5 business days</strong>.
+          </p>
+        </div>
+
+        <!-- Shipping 3 -->
+        <div class="policy-card">
+          <div class="policy-card-num">03 // CASH ON DELIVERY</div>
+          <h3 class="policy-card-title">COD &amp; Prepaid Options</h3>
+          <p class="policy-card-desc">
+            Cash on Delivery (COD) is available nationwide. Prepaid bank transfers via Meezan Bank, JazzCash, and Easypaisa are also supported for zero-cash physical handovers.
+          </p>
+        </div>
+
+        <!-- Shipping 4 -->
+        <div class="policy-card">
+          <div class="policy-card-num">04 // ORDER TRACKING</div>
+          <h3 class="policy-card-title">Real-Time Dispatch Updates</h3>
+          <p class="policy-card-desc">
+            Orders placed before 2:00 PM PKT are processed for same-day or next-day courier dispatch (excluding Sundays). Courier tracking numbers are transmitted via email/SMS upon dispatch.
+          </p>
+        </div>
+
+      {% when 'privacy' %}
+        <!-- Privacy 1 -->
+        <div class="policy-card">
+          <div class="policy-card-num">01 // ESSENTIAL INFORMATION</div>
+          <h3 class="policy-card-title">Fulfillment Data Only</h3>
+          <p class="policy-card-desc">
+            We collect only information essential to process and deliver your hardware orders: customer name, shipping address, contact phone number, and email address.
+          </p>
+        </div>
+
+        <!-- Privacy 2 -->
+        <div class="policy-card">
+          <div class="policy-card-num">02 // ZERO THIRD-PARTY SELLING</div>
+          <h3 class="policy-card-title">Strict Data Confidentiality</h3>
+          <p class="policy-card-desc">
+            DEXYFIED never sells, rents, or licenses your personal information to third-party marketing companies. Data is shared only with verified courier partners for physical delivery execution.
+          </p>
+        </div>
+
+        <!-- Privacy 3 -->
+        <div class="policy-card">
+          <div class="policy-card-num">03 // SECURE CHECKOUT</div>
+          <h3 class="policy-card-title">Encrypted Transmission</h3>
+          <p class="policy-card-desc">
+            All storefront transactions and account credentials are transmitted over encrypted TLS/SSL connections adhering to global e-commerce security standards.
+          </p>
+        </div>
+
+        <!-- Privacy 4 -->
+        <div class="policy-card">
+          <div class="policy-card-num">04 // DATA RIGHTS</div>
+          <h3 class="policy-card-title">Access &amp; Removal</h3>
+          <p class="policy-card-desc">
+            You may request an update or deletion of your customer profile at any time by contacting our support team at <a href="mailto:dexyfied@gmail.com" style="color: var(--accent-blue); text-decoration: underline;">dexyfied@gmail.com</a>.
+          </p>
+        </div>
+
+      {% when 'terms' %}
+        <!-- Terms 1 -->
+        <div class="policy-card">
+          <div class="policy-card-num">01 // OPERATING IDENTITY</div>
+          <h3 class="policy-card-title">DEXYFIED Hardware Store</h3>
+          <p class="policy-card-desc">
+            This storefront is operated by DEXYFIED (Hardware // Pakistan). By placing an order, you agree to these commercial terms and conditions of purchase.
+          </p>
+        </div>
+
+        <!-- Terms 2 -->
+        <div class="policy-card">
+          <div class="policy-card-num">02 // PRICING &amp; AVAILABILITY</div>
+          <h3 class="policy-card-title">Accurate Pricing in PKR</h3>
+          <p class="policy-card-desc">
+            All pricing is displayed in Pakistani Rupees (PKR). Products remain subject to physical inventory availability. In the event of an inadvertent typographical pricing error, we notify the buyer prior to dispatch.
+          </p>
+        </div>
+
+        <!-- Terms 3 -->
+        <div class="policy-card">
+          <div class="policy-card-num">03 // ADDRESS VERIFICATION</div>
+          <h3 class="policy-card-title">Order Confirmation</h3>
+          <p class="policy-card-desc">
+            Cash on Delivery orders are subject to phone or WhatsApp verification prior to courier dispatch. DEXYFIED reserves the right to cancel unverified orders or addresses deemed incomplete.
+          </p>
+        </div>
+
+        <!-- Terms 4 -->
+        <div class="policy-card">
+          <div class="policy-card-num">04 // HARDWARE STANDARDS</div>
+          <h3 class="policy-card-title">QC Inspection</h3>
+          <p class="policy-card-desc">
+            Every hardware unit undergoes visual and technical inspection prior to shipment. Warranty claims and return procedures are governed by our official 7-Day Return Policy.
+          </p>
+        </div>
+    {% endcase %}
+  </div>
+
+  <!-- Quick Policy Navigation Bar -->
+  <div class="policy-nav-strip">
+    <div style="font-family: var(--font-tech); font-size: 0.6875rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem;">
+      POLICIES DIRECTORY // QUICK ACCESS
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+      <a href="/pages/refund-policy" class="btn-tech {% if target_policy == 'refund' %}policy-nav-active{% endif %}">7-Day Return Policy</a>
+      <a href="/pages/shipping-policy" class="btn-tech {% if target_policy == 'shipping' %}policy-nav-active{% endif %}">Shipping Policy</a>
+      <a href="/pages/privacy-policy" class="btn-tech {% if target_policy == 'privacy' %}policy-nav-active{% endif %}">Privacy Policy</a>
+      <a href="/pages/terms" class="btn-tech {% if target_policy == 'terms' %}policy-nav-active{% endif %}">Terms of Service</a>
+      <a href="/pages/contact" class="btn-tech">Contact Support Desk →</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .policy-hero-card {
+    padding: 1.5rem;
+    border: 1px solid var(--border-main);
+    background-color: var(--bg-surface-elevated);
+    border-radius: var(--radius-xs);
+    box-shadow: var(--shadow-2xs);
+  }
+  @media (min-width: 640px) {
+    .policy-hero-card {
+      padding: 2.25rem;
+    }
+  }
+  .policy-sections-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 640px) {
+    .policy-sections-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+  }
+  .policy-card {
+    padding: 1.25rem;
+    border: 1px solid var(--border-main);
+    background-color: var(--bg-surface);
+    border-radius: var(--radius-xs);
+    box-shadow: var(--shadow-2xs);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .policy-card:hover {
+    border-color: var(--border-bright);
+    transform: translateY(-2px);
+  }
+  .policy-card-num {
+    font-family: var(--font-tech);
+    font-size: 0.6875rem;
+    color: var(--accent-blue);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 0.375rem;
+  }
+  .policy-card-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+    line-height: 1.25;
+  }
+  .policy-card-desc {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+  .policy-nav-strip {
+    margin-top: 2.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--border-main);
+    background-color: var(--bg-surface-subtle);
+    border-radius: var(--radius-xs);
+  }
+  .policy-nav-active {
+    border-color: var(--accent-blue) !important;
+    background-color: var(--accent-blue-subtle) !important;
+    color: var(--accent-blue) !important;
+    font-weight: 700 !important;
+  }
+</style>

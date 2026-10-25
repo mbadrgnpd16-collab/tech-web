@@ -212,50 +212,8 @@
         {% form 'product', product, id: 'pdpForm', class: 'pdp-product-form' %}
           <input type="hidden" name="id" id="selectedVariantId" value="{{ current_variant.id }}">
 
-          <!-- Variant Selector: Laptop Stand Silver & Black -->
-          {% if is_laptop_stand and product.variants.size > 1 %}
-            <div style="padding: 1.25rem; border: 1px solid var(--border-main); background: var(--bg-surface-elevated); border-radius: var(--radius-xs); margin-bottom: 1.25rem;">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-                <span style="font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">
-                  SELECT FINISH:
-                </span>
-                <span id="pdpSelectedFinishText" style="font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; color: var(--text-primary); font-weight: 700;">
-                  {{ current_variant.title }}
-                </span>
-              </div>
-
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-                {% for variant in product.variants %}
-                  {% assign is_selected = false %}
-                  {% if variant.id == current_variant.id %}{% assign is_selected = true %}{% endif %}
-                  {% assign is_silver = false %}
-                  {% if variant.title contains 'Silver' or variant.title contains 'silver' %}{% assign is_silver = true %}{% endif %}
-
-                  <button
-                    type="button"
-                    class="pdp-finish-btn"
-                    data-variant-id="{{ variant.id }}"
-                    data-variant-title="{{ variant.title }}"
-                    data-variant-price="{{ variant.price | money_without_trailing_zeros }}"
-                    data-variant-compare="{{ variant.compare_at_price | money_without_trailing_zeros }}"
-                    data-variant-image="{% if variant.featured_image %}{{ variant.featured_image | image_url: width: 900 }}{% elsif is_silver %}{{ 'laptop-stand-silver.png' | asset_url }}{% else %}{{ 'laptop-stand-black.png' | asset_url }}{% endif %}"
-                    style="padding: 0.75rem; border: 1px solid {% if is_selected %}var(--accent-blue){% else %}var(--border-main){% endif %}; background: var(--bg-surface); border-radius: var(--radius-xs); display: flex; align-items: center; gap: 0.75rem; cursor: pointer; text-align: left;"
-                    onclick="selectPdpVariant(this)"
-                  >
-                    <span style="width: 1rem; height: 1rem; border-radius: 9999px; border: 1px solid #71717A; background-color: {% if is_silver %}#D4D4D8{% else %}#18181B{% endif %}; flex-shrink: 0;"></span>
-                    <div>
-                      <div style="font-family: var(--font-display); font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-primary);">
-                        {{ variant.title }}
-                      </div>
-                      <div style="font-family: var(--font-tech); font-size: 0.625rem; color: var(--text-dim); text-transform: uppercase;">
-                        IN STOCK
-                      </div>
-                    </div>
-                  </button>
-                {% endfor %}
-              </div>
-            </div>
-          {% elsif is_ring %}
+          <!-- Variant Selector: Universal for all products with multiple variants, or Ring Sizes -->
+          {% if is_ring %}
             <!-- Ring Size Selector (Sizes: 6, 7, 9, 10, 11, 12, 17, 20, 21) -->
             <div style="padding: 1.25rem; border: 1px solid var(--border-main); background: var(--bg-surface); border-radius: var(--radius-xs); margin-bottom: 1.25rem;">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
@@ -289,26 +247,149 @@
               </div>
             </div>
           {% elsif product.variants.size > 1 %}
-            <!-- Generic Variant Options Selector -->
-            <div style="padding: 1.25rem; border: 1px solid var(--border-main); background: var(--bg-surface); border-radius: var(--radius-xs); margin-bottom: 1.25rem;">
+            <!-- Interactive Color & Finish Variant Selector (All Products) -->
+            {%- liquid
+              assign option_label = 'COLOR / FINISH'
+              if product.options.size > 0
+                assign option_label = product.options.first | upcase
+              endif
+            -%}
+            <div style="padding: 1.25rem; border: 1px solid var(--border-main); background: var(--bg-surface-elevated); border-radius: var(--radius-xs); margin-bottom: 1.25rem;">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
                 <span style="font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">
-                  SELECT OPTION:
+                  SELECT {{ option_label }}:
                 </span>
-                <span style="font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; color: var(--text-primary); font-weight: 700;">
+                <span id="pdpSelectedFinishText" style="font-family: var(--font-tech); font-size: 0.75rem; text-transform: uppercase; color: var(--text-primary); font-weight: 700;">
                   {{ current_variant.title }}
                 </span>
               </div>
-              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+
+              <div class="pdp-variants-grid" style="display: grid; grid-template-columns: {% if product.variants.size == 2 %}1fr 1fr{% else %}repeat(auto-fit, minmax(130px, 1fr)){% endif %}; gap: 0.75rem;">
                 {% for variant in product.variants %}
+                  {%- liquid
+                    assign is_selected = false
+                    if variant.id == current_variant.id
+                      assign is_selected = true
+                    endif
+
+                    assign v_title_lower = variant.title | downcase
+                    assign v_img = ''
+
+                    if variant.featured_image != blank
+                      assign v_img = variant.featured_image | image_url: width: 900
+                    elsif variant.image != blank
+                      assign v_img = variant.image | image_url: width: 900
+                    endif
+
+                    # Match media by alt text containing variant title
+                    if v_img == ''
+                      for m in product.media
+                        assign m_alt_lower = m.alt | default: '' | downcase
+                        if m_alt_lower contains v_title_lower and v_title_lower != ''
+                          assign v_img = m | image_url: width: 900
+                          break
+                        endif
+                      endfor
+                    endif
+
+                    # Core catalogue fallbacks
+                    if v_img == ''
+                      if product.handle contains 'laptop' or product.handle contains 'stand'
+                        if v_title_lower contains 'silver' or v_title_lower contains 'grey' or v_title_lower contains 'gray'
+                          assign v_img = 'laptop-stand-silver.png' | asset_url
+                        else
+                          assign v_img = 'laptop-stand-black.png' | asset_url
+                        endif
+                      elsif product.handle contains 'airpods' or product.handle contains 'earbuds' or product.handle contains 'case'
+                        if v_title_lower contains 'white'
+                          assign v_img = 'airpods-case-white.png' | asset_url
+                        else
+                          assign v_img = 'airpods-case-black.png' | asset_url
+                        endif
+                      elsif product.handle contains 'headphones'
+                        assign v_img = 'wireless-headphones.png' | asset_url
+                      elsif product.handle contains 'i9'
+                        assign v_img = 'i9-ultra-max.png' | asset_url
+                      elsif product.handle contains 't900'
+                        assign v_img = 't900-ultra-2.png' | asset_url
+                      elsif product.handle contains 't800'
+                        assign v_img = 't800-ultra.png' | asset_url
+                      elsif product.handle contains 'ring'
+                        assign v_img = 'luminous-ring.png' | asset_url
+                      endif
+                    endif
+
+                    # Positional fallback to product media
+                    if v_img == '' and product.media.size > forloop.index0
+                      assign v_img = product.media[forloop.index0] | image_url: width: 900
+                    endif
+
+                    # Final fallback to featured media
+                    if v_img == '' and product.featured_media != blank
+                      assign v_img = product.featured_media | image_url: width: 900
+                    endif
+
+                    # Dynamic Swatch Dot Color
+                    assign swatch_bg = '#18181B'
+                    assign swatch_border = '#71717A'
+
+                    if v_title_lower contains 'silver' or v_title_lower contains 'grey' or v_title_lower contains 'gray'
+                      assign swatch_bg = '#D4D4D8'
+                      assign swatch_border = '#A1A1AA'
+                    elsif v_title_lower contains 'white'
+                      assign swatch_bg = '#FFFFFF'
+                      assign swatch_border = '#CBD5E1'
+                    elsif v_title_lower contains 'black' or v_title_lower contains 'dark' or v_title_lower contains 'space'
+                      assign swatch_bg = '#18181B'
+                      assign swatch_border = '#71717A'
+                    elsif v_title_lower contains 'orange'
+                      assign swatch_bg = '#EA580C'
+                      assign swatch_border = '#C2410C'
+                    elsif v_title_lower contains 'blue' or v_title_lower contains 'navy' or v_title_lower contains 'ocean'
+                      assign swatch_bg = '#2563EB'
+                      assign swatch_border = '#1D4ED8'
+                    elsif v_title_lower contains 'yellow' or v_title_lower contains 'gold'
+                      assign swatch_bg = '#EAB308'
+                      assign swatch_border = '#CA8A04'
+                    elsif v_title_lower contains 'green' or v_title_lower contains 'olive'
+                      assign swatch_bg = '#16A34A'
+                      assign swatch_border = '#15803D'
+                    elsif v_title_lower contains 'red' or v_title_lower contains 'crimson'
+                      assign swatch_bg = '#DC2626'
+                      assign swatch_border = '#B91C1C'
+                    elsif v_title_lower contains 'pink' or v_title_lower contains 'rose'
+                      assign swatch_bg = '#EC4899'
+                      assign swatch_border = '#DB2777'
+                    elsif v_title_lower contains 'purple' or v_title_lower contains 'violet'
+                      assign swatch_bg = '#9333EA'
+                      assign swatch_border = '#7E22CE'
+                    else
+                      assign swatch_bg = 'var(--accent-blue)'
+                      assign swatch_border = 'var(--accent-blue-hover)'
+                    endif
+                  -%}
+
                   <button
                     type="button"
-                    class="btn-tech"
+                    class="pdp-finish-btn pdp-variant-btn {% if is_selected %}active{% endif %}"
                     data-variant-id="{{ variant.id }}"
-                    style="{% if variant.id == current_variant.id %}border-color: var(--accent-blue); color: var(--accent-blue); font-weight: 700; background: var(--accent-blue-subtle);{% endif %}"
+                    data-variant-title="{{ variant.title }}"
+                    data-variant-price="{{ variant.price | money_without_trailing_zeros }}"
+                    data-variant-compare="{{ variant.compare_at_price | money_without_trailing_zeros }}"
+                    data-variant-available="{{ variant.available }}"
+                    data-variant-image="{{ v_img }}"
+                    style="padding: 0.75rem; border: 1px solid {% if is_selected %}var(--accent-blue){% else %}var(--border-main){% endif %}; background: {% if is_selected %}var(--accent-blue-subtle){% else %}var(--bg-surface){% endif %}; border-radius: var(--radius-xs); display: flex; align-items: center; gap: 0.75rem; cursor: pointer; text-align: left; transition: all 0.2s ease;"
                     onclick="selectPdpVariant(this)"
                   >
-                    {{ variant.title }}
+                    <span style="width: 1rem; height: 1rem; border-radius: 9999px; border: 1px solid {{ swatch_border }}; background-color: {{ swatch_bg }}; flex-shrink: 0;"></span>
+                    <div style="min-width: 0; flex: 1;">
+                      <div style="font-family: var(--font-display); font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        {{ variant.title }}
+                      </div>
+                      <div style="font-family: var(--font-tech); font-size: 0.625rem; color: {% if variant.available %}var(--text-dim){% else %}#DC2626{% endif %}; text-transform: uppercase;">
+                        {% if variant.available %}IN STOCK{% else %}SOLD OUT{% endif %}
+                      </div>
+                    </div>
                   </button>
                 {% endfor %}
               </div>
@@ -520,13 +601,19 @@
   }
 
   function selectPdpVariant(button) {
+    if (!button) return;
+
     const variantId = button.getAttribute('data-variant-id');
     const title = button.getAttribute('data-variant-title');
     const price = button.getAttribute('data-variant-price');
     const compare = button.getAttribute('data-variant-compare');
     const image = button.getAttribute('data-variant-image');
+    const available = button.getAttribute('data-variant-available') !== 'false';
 
-    document.getElementById('selectedVariantId').value = variantId;
+    const hiddenId = document.getElementById('selectedVariantId');
+    if (hiddenId && variantId) {
+      hiddenId.value = variantId;
+    }
 
     if (title && document.getElementById('pdpSelectedFinishText')) {
       document.getElementById('pdpSelectedFinishText').textContent = title;
@@ -540,15 +627,91 @@
     if (price && document.getElementById('mobileStickyPrice')) {
       document.getElementById('mobileStickyPrice').textContent = price;
     }
-    if (image && document.getElementById('pdpMainImage')) {
-      document.getElementById('pdpMainImage').src = image;
+
+    // Compare Price & Savings
+    const compareEl = document.getElementById('pdpComparePrice');
+    if (compareEl) {
+      if (compare && compare !== '0' && compare !== price) {
+        compareEl.textContent = 'ORIGINAL: ' + compare;
+        compareEl.style.display = 'block';
+      } else {
+        compareEl.style.display = 'none';
+      }
     }
 
-    // Toggle active state on buttons
-    document.querySelectorAll('.pdp-finish-btn').forEach(btn => {
+    // Dynamic Image Switch with smooth fade
+    if (image && document.getElementById('pdpMainImage')) {
+      const mainImg = document.getElementById('pdpMainImage');
+      mainImg.style.opacity = '0.4';
+      mainImg.style.transform = 'scale(0.98)';
+
+      const imgLoader = new Image();
+      imgLoader.onload = function() {
+        mainImg.src = image;
+        if (title) mainImg.alt = title;
+        mainImg.style.opacity = '1';
+        mainImg.style.transform = 'scale(1)';
+      };
+      imgLoader.onerror = function() {
+        mainImg.src = image;
+        mainImg.style.opacity = '1';
+        mainImg.style.transform = 'scale(1)';
+      };
+      imgLoader.src = image;
+
+      // Sync active thumbnail in thumbnail strip
+      const thumbs = document.querySelectorAll('[data-gallery-thumb]');
+      if (thumbs.length) {
+        thumbs.forEach(t => {
+          const fullSrc = t.getAttribute('data-full-src') || '';
+          const alt = (t.getAttribute('data-alt') || '').toLowerCase();
+          const tLower = (title || '').toLowerCase();
+          if ((fullSrc && (fullSrc === image || image.includes(fullSrc) || fullSrc.includes(image))) || (tLower && alt && alt.includes(tLower))) {
+            thumbs.forEach(th => th.classList.remove('active'));
+            t.classList.add('active');
+          }
+        });
+      }
+    }
+
+    // Toggle active state on buttons (both .pdp-finish-btn and .pdp-variant-btn)
+    document.querySelectorAll('.pdp-finish-btn, .pdp-variant-btn').forEach(btn => {
+      btn.classList.remove('active');
       btn.style.borderColor = 'var(--border-main)';
+      btn.style.backgroundColor = 'var(--bg-surface)';
     });
+    button.classList.add('active');
     button.style.borderColor = 'var(--accent-blue)';
+    button.style.backgroundColor = 'var(--accent-blue-subtle)';
+
+    // Update Add to Cart / Buy Now button state if variant is sold out
+    const addBtn = document.getElementById('pdpAddToCartBtn');
+    const buyBtn = document.getElementById('pdpBuyNowBtn');
+    if (!available) {
+      if (addBtn) {
+        addBtn.disabled = true;
+        addBtn.innerText = 'SOLD OUT';
+        addBtn.style.opacity = '0.5';
+        addBtn.style.cursor = 'not-allowed';
+      }
+      if (buyBtn) {
+        buyBtn.disabled = true;
+        buyBtn.style.opacity = '0.5';
+        buyBtn.style.cursor = 'not-allowed';
+      }
+    } else {
+      if (addBtn) {
+        addBtn.disabled = false;
+        addBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg><span>ADD TO BAG</span>';
+        addBtn.style.opacity = '1';
+        addBtn.style.cursor = 'pointer';
+      }
+      if (buyBtn) {
+        buyBtn.disabled = false;
+        buyBtn.style.opacity = '1';
+        buyBtn.style.cursor = 'pointer';
+      }
+    }
   }
 
   function selectRingSize(size, button) {
